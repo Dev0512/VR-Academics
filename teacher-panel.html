@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Control Center | VR Academics</title>
+    <script>
+        if (sessionStorage.getItem('staffLoggedIn') !== 'true') {
+            alert('Unauthorized access! Redirecting to home.');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <link rel="stylesheet" href="teacher-panel.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <div class="panel-brand">
+                <h3>VR Academics</h3>
+                <p>Staff Panel</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="switchTab('student-tab', this)">Manage Students</li>
+                <li class="nav-item" onclick="switchTab('resource-tab', this)">Manage Resources</li>
+            </ul>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Log Out</button>
+    </div>
+
+    <div class="main-workspace">
+        
+        <div id="student-tab" class="tab-content active-tab">
+            <h2>Student Roster Management</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Register administrative profiles or remove access rules permanently.</p>
+            
+            <form id="studentForm" class="admin-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="studName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Target Class / Batch</label>
+                    <select id="studClass" required>
+                        <option value="9th">Class 9th</option>
+                        <option value="10th">Class 10th</option>
+                        <option value="11th">Class 11th</option>
+                        <option value="12th">Class 12th</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Assigned Student ID</label>
+                    <input type="text" id="studID" required placeholder="VR202601">
+                </div>
+                <div class="form-group">
+                    <label>Account Password</label>
+                    <input type="text" id="studPass" required placeholder="Create secure password">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="studPhone" required placeholder="10-digit mobile">
+                </div>
+                <button type="submit" class="submit-btn">Save & Register Student</button>
+            </form>
+
+            <div class="management-grid-wrapper">
+                <h3>Currently Enrolled Database List</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>Student ID</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="resource-tab" class="tab-content">
+            <h2>Academic Resource Management</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Publish educational assets or remove items dynamically.</p>
+            
+            <form id="resourceForm" class="admin-form">
+                <div class="form-group">
+                    <label>Subject</label>
+                    <select id="resSubject" required>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Biology">Biology</option>
+                        <option value="English">English</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Topic Title</label>
+                    <input type="text" id="resTopic" required placeholder="e.g., Thermodynamics Intro">
+                </div>
+                <div class="form-group">
+                    <label>Resource Type</label>
+                    <select id="resType" required>
+                        <option value="Notes PDF">Notes PDF</option>
+                        <option value="DPP Sheets">Daily Practice Paper (DPP)</option>
+                        <option value="Reference Link">Video/Reference Link</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Target Student Class</label>
+                    <select id="resClass" required>
+                        <option value="9th">Class 9th</option>
+                        <option value="10th">Class 10th</option>
+                        <option value="11th">Class 11th</option>
+                        <option value="12th">Class 12th</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Resource Source</label>
+                    <select id="sourceToggle" onchange="toggleSourceInput()">
+                        <option value="upload">Upload PDF File from Device</option>
+                        <option value="link">Paste External URL Link</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="uploadInputGroup" style="grid-column: span 2;">
+                    <label>Upload File (.pdf)</label>
+                    <input type="file" id="resFile" accept=".pdf">
+                </div>
+
+                <div class="form-group" id="linkInputGroup" style="grid-column: span 2; display: none;">
+                    <label>Resource URL Link</label>
+                    <input type="url" id="resLink" placeholder="https://example.com/resource">
+                </div>
+
+                <button type="submit" class="submit-btn" id="uploadSubmitBtn">Publish to Dashboard</button>
+            </form>
+
+            <div class="management-grid-wrapper">
+                <h3>Published Materials Catalog</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Topic Title</th>
+                            <th>Target Class</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resourcesTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="teacher-panel.js"></script>
+</body>
+</html>

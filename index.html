@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR Academics | Achieve Excellence</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">VR ACADEMICS</div>
+        <div class="nav-links">
+            <button type="button" id="openLoginBtn" class="portal-trigger-btn">Login Portal</button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Welcome to <span>VR Academics</span></h1>
+        <p>Your premier institute for advanced academic coaching, comprehensive test preparation, and structured learning designed for high-performance students.</p>
+    </section>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="login-card">
+            <button type="button" class="close-btn" id="closeLoginBtn">&times;</button>
+            
+            <div class="tab-container">
+                <button type="button" class="tab-btn active" id="tabStudent">Student Portal</button>
+                <button type="button" class="tab-btn" id="tabStaff">Staff Portal</button>
+            </div>
+
+            <form id="studentLoginForm" class="login-form active">
+                <h2>Student Login</h2>
+                <div class="input-group">
+                    <label for="studentId">Student ID / Roll No.</label>
+                    <input type="text" id="studentId" name="studentId" required placeholder="e.g., VR2026105">
+                </div>
+                <div class="input-group">
+                    <label for="studentPassword">Password</label>
+                    <input type="password" id="studentPassword" name="studentPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="login-submit" id="studentSubmitBtn">Login to Dashboard</button>
+                <div class="error-msg" id="studentErrorMsg">Invalid Student ID or Password.</div>
+            </form>
+
+            <form id="staffLoginForm" class="login-form">
+                <h2>Staff Login</h2>
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter staff ID">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="login-submit" id="staffSubmitBtn">Access Staff Panel</button>
+                <div class="error-msg" id="staffErrorMsg">Invalid credentials. Access Denied.</div>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>

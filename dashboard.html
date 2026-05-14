@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | VR Academics</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="profile-panel">
+            <div class="student-card">
+                <h2 id="welcomeName">Loading Student Profile...</h2>
+                <p id="studentMeta" style="color: #00f2fe; margin-top: 5px; font-weight: 500;"></p>
+                <button id="studentLogout" class="logout-link">Log Out Profile</button>
+            </div>
+
+            <div class="notice-box">
+                <h3>Institute Notices</h3>
+                <div id="noticeContainer" class="notice-list">
+                    <p style="color: #64748b;">Synchronizing announcements...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-panel">
+            <div class="subject-filter-bar">
+                <h3>Academic Materials Repository</h3>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterSubject('All')">All Subjects</button>
+                    <button class="filter-btn" onclick="filterSubject('Physics')">Physics</button>
+                    <button class="filter-btn" onclick="filterSubject('Chemistry')">Chemistry</button>
+                    <button class="filter-btn" onclick="filterSubject('Mathematics')">Mathematics</button>
+                    <button class="filter-btn" onclick="filterSubject('Biology')">Biology</button>
+                    <button class="filter-btn" onclick="filterSubject('English')">English</button>
+                </div>
+            </div>
+
+            <div id="resourcesGrid" class="resources-grid">
+                </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
