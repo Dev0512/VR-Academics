@@ -5,6 +5,26 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshResourcesTable();
 });
 
+// Universal Toast Notification System
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) {
+        console.error("Toast container missing from HTML!");
+        return;
+    }
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    
+    container.appendChild(toast);
+
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
 function switchTab(tabId, element) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active-tab'));
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -38,7 +58,6 @@ const toBase64 = file => new Promise((resolve, reject) => {
 // --- STUDENT OPS ---
 async function refreshStudentsTable() {
     try {
-        // Appended explicit URL parameters to bypass the Google Apps Script 'undefined parameter' crash
         const response = await fetch(`${SCRIPT_URL}?action=getStudentsList`, { method: 'POST', body: JSON.stringify({}) });
         const result = await response.json();
         const tbody = document.getElementById("studentsTableBody");
@@ -49,7 +68,10 @@ async function refreshStudentsTable() {
                 tbody.innerHTML += `<tr><td>${s.name}</td><td>Class ${s.class}</td><td><code>${s.id}</code></td><td><button class="delete-row-btn" onclick="executeDeletion('Students', ${s.rowNum}, 'student')">Remove</button></td></tr>`;
             });
         }
-    } catch(err) { console.error("Sync failure."); }
+    } catch(err) { 
+        console.error("Sync failure.");
+        showToast("Failed to refresh student list.", "error");
+    }
 }
 
 document.getElementById('studentForm').addEventListener('submit', async (e) => {
@@ -62,21 +84,23 @@ document.getElementById('studentForm').addEventListener('submit', async (e) => {
         phone: document.getElementById('studPhone').value
     };
     try {
-        // Form submitted using parameter endpoints
         const response = await fetch(`${SCRIPT_URL}?action=addStudent`, { method: 'POST', body: JSON.stringify(payload) });
         const result = await response.json();
         if(result.status === "success") {
-            alert("Student Registered successfully.");
+            showToast("Student Registered successfully!", "success");
             document.getElementById('studentForm').reset();
             refreshStudentsTable();
+        } else {
+            showToast(result.message || "Registration failed.", "error");
         }
-    } catch (err) { alert("Communication failed with sheets gateway."); }
+    } catch (err) { 
+        showToast("Communication failed with sheets gateway.", "error"); 
+    }
 });
 
 // --- RESOURCE OPS ---
 async function refreshResourcesTable() {
     try {
-        // Appended explicit URL parameters to bypass the Google Apps Script 'undefined parameter' crash
         const response = await fetch(`${SCRIPT_URL}?action=getResourcesList`, { method: 'POST', body: JSON.stringify({}) });
         const result = await response.json();
         const tbody = document.getElementById("resourcesTableBody");
@@ -87,7 +111,10 @@ async function refreshResourcesTable() {
                 tbody.innerHTML += `<tr><td><strong>${r.subject}</strong></td><td>${r.topic}</td><td>Class ${r.class}</td><td><button class="delete-row-btn" onclick="executeDeletion('Resources', ${r.rowNum}, 'resource')">Delete</button></td></tr>`;
             });
         }
-    } catch(err) { console.error("Sync failure."); }
+    } catch(err) { 
+        console.error("Sync failure.");
+        showToast("Failed to refresh resource catalog.", "error");
+    }
 }
 
 document.getElementById('resourceForm').addEventListener('submit', async (e) => {
@@ -105,13 +132,16 @@ document.getElementById('resourceForm').addEventListener('submit', async (e) => 
     };
 
     if (mode === 'upload') {
-        if (fileInput.files.length === 0) { alert("Please select a file."); return; }
-        submitBtn.innerText = "Processing File Text...";
+        if (fileInput.files.length === 0) { 
+            showToast("Please select a file to upload.", "error"); 
+            return; 
+        }
+        submitBtn.innerText = "Processing File...";
         submitBtn.disabled = true;
         const file = fileInput.files[0];
         
         if (file.size > 150000) { 
-            alert("File too large! Keep under 150KB for raw text sheets cells.");
+            showToast("File too large! (Limit: 150KB)", "error");
             submitBtn.innerText = "Publish to Dashboard";
             submitBtn.disabled = false;
             return;
@@ -120,7 +150,8 @@ document.getElementById('resourceForm').addEventListener('submit', async (e) => 
             payload.fileData = await toBase64(file);
             payload.fileMime = file.type;
         } catch (err) {
-            alert("Error parsing binary file mapping.");
+            showToast("Error processing file data.", "error");
+            submitBtn.disabled = false;
             return;
         }
     } else {
@@ -128,34 +159,45 @@ document.getElementById('resourceForm').addEventListener('submit', async (e) => 
     }
 
     try {
-        // Form submitted using parameter endpoints
         const response = await fetch(`${SCRIPT_URL}?action=addResource`, { method: 'POST', body: JSON.stringify(payload) });
         const result = await response.json();
         if (result.status === "success") {
-            alert("Resource Published directly to Student dashboard!");
+            showToast("Resource Published to Dashboard!", "success");
             document.getElementById('resourceForm').reset();
             toggleSourceInput();
             refreshResourcesTable();
+        } else {
+            showToast(result.message || "Upload failed.", "error");
         }
-    } catch (err) { alert("Error connecting to script."); }
-    finally { submitBtn.innerText = "Publish to Dashboard"; submitBtn.disabled = false; }
+    } catch (err) { 
+        showToast("Error connecting to script.", "error"); 
+    } finally { 
+        submitBtn.innerText = "Publish to Dashboard"; 
+        submitBtn.disabled = false; 
+    }
 });
 
 async function executeDeletion(sheetName, rowNum, context) {
     if (!confirm(`Permanently delete this ${context}?`)) return;
     try {
-        // Deletion triggered via explicit parameter router mapping
         const response = await fetch(`${SCRIPT_URL}?action=deleteRow`, { method: 'POST', body: JSON.stringify({ sheetName: sheetName, rowNum: rowNum }) });
         const result = await response.json();
         if (result.status === "success") {
-            alert("Deleted successfully.");
+            showToast(`${context.charAt(0).toUpperCase() + context.slice(1)} removed successfully.`, "success");
             if (context === 'student') refreshStudentsTable();
             if (context === 'resource') refreshResourcesTable();
+        } else {
+            showToast("Deletion failed.", "error");
         }
-    } catch (err) { alert("Network dropped error."); }
+    } catch (err) { 
+        showToast("Network error during deletion.", "error"); 
+    }
 }
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
     sessionStorage.removeItem('staffLoggedIn');
-    window.location.href = 'index.html';
+    showToast("Logging out...", "success");
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1000);
 });

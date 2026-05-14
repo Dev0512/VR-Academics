@@ -112,3 +112,47 @@ staffLoginForm.addEventListener('submit', (e) => {
         staffErrorMsg.style.display = 'block';
     }
 });
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    
+    container.appendChild(toast);
+
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+async function executeDeletion(sheetName, rowNum, context) {
+    // Stage 1: Browser Confirmation (Safety Gate)
+    if (!confirm(`Are you sure you want to permanently delete this ${context}? This action cannot be undone.`)) {
+        showToast("Deletion cancelled.", "error"); // Optional: let them know it was aborted
+        return;
+    }
+
+    try {
+        // Stage 2: Triggering the Apps Script Deletion
+        const response = await fetch(`${SCRIPT_URL}?action=deleteRow`, { 
+            method: 'POST', 
+            body: JSON.stringify({ sheetName: sheetName, rowNum: rowNum }) 
+        });
+        const result = await response.json();
+
+        if (result.status === "success") {
+            // Stage 3: Success Notification
+            showToast(`${context.charAt(0).toUpperCase() + context.slice(1)} deleted from database.`, "success");
+            
+            // Stage 4: Refresh the specific table without reloading page
+            if (context === 'student') refreshStudentsTable();
+            if (context === 'resource') refreshResourcesTable();
+        } else {
+            showToast(result.message || "Deletion failed. Check spreadsheet permissions.", "error");
+        }
+    } catch (err) { 
+        console.error("Deletion Error:", err);
+        showToast("Network error. Record was not deleted.", "error"); 
+    }
+}
