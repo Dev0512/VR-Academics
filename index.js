@@ -1,70 +1,118 @@
-// PASTE YOUR ACTUAL APPS SCRIPT WEB APP URL HERE
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWvJYEEx-fIt8_W78w8SWNC2g5z5EOVE8GodxXBJ5UlGtBRSfwwDigVLO1OwAbs03mOw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwA9kC29oWeo6oxPX4G88BqcaOu9G_6cKzY7ms4Eo7ERtyosGg3L-kqauMKhDBVLXVA9g/exec";
 
-// Modal Controls Elements
-const openLoginBtn = document.getElementById('openLoginBtn');
-const closeLoginBtn = document.getElementById('closeLoginBtn');
-const loginModal = document.getElementById('loginModal');
+// ==========================================
+// 1. CORE INITIALIZATION & MODAL TOGGLES
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const loginModal = document.getElementById('loginModal');
+    const openLoginBtn = document.getElementById('openLoginBtn');
+    const closeLoginBtn = document.getElementById('closeLoginBtn');
 
-// Tab Toggle Selection Elements
+    // Open Modal
+    if (openLoginBtn) {
+        openLoginBtn.addEventListener('click', () => {
+            loginModal.classList.add('active');
+            // Default to student login view on open
+            resetToStudentTab();
+        });
+    }
+
+    // Close Modal
+    if (closeLoginBtn) {
+        closeLoginBtn.addEventListener('click', () => {
+            loginModal.classList.remove('active');
+        });
+    }
+
+    // Close Modal by clicking overlay shadow
+    window.addEventListener('click', (e) => {
+        if (e.target === loginModal) {
+            loginModal.classList.remove('active');
+        }
+    });
+});
+
+// Universal Toast Notification System
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// ==========================================
+// 2. THREE-WAY TAB MULTIPLEXER LOGIC
+// ==========================================
 const tabStudent = document.getElementById('tabStudent');
+const tabSignup = document.getElementById('tabSignup');
 const tabStaff = document.getElementById('tabStaff');
 
-// Form Formats Elements
-const studentLoginForm = document.getElementById('studentLoginForm');
-const staffLoginForm = document.getElementById('staffLoginForm');
+const studentForm = document.getElementById('studentLoginForm');
+const signupForm = document.getElementById('studentSignupForm');
+const staffForm = document.getElementById('staffLoginForm');
 
-// Error Messaging Hook Targets
 const studentErrorMsg = document.getElementById('studentErrorMsg');
 const staffErrorMsg = document.getElementById('staffErrorMsg');
 
-// Modal Toggles Controllers
-openLoginBtn.addEventListener('click', () => loginModal.classList.add('active'));
-closeLoginBtn.addEventListener('click', () => {
-    loginModal.classList.remove('active');
-    resetPortalForms();
+function clearErrorMessages() {
+    if (studentErrorMsg) studentErrorMsg.style.display = 'none';
+    if (staffErrorMsg) staffErrorMsg.style.display = 'none';
+}
+
+// Helper function to manage layout engine visibility states
+function switchActiveForm(activeTab, formToShow) {
+    clearErrorMessages();
+    
+    // Step 1: Remove 'active' selection states from all upper buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Step 2: Remove active visibility markers from ALL forms and hide them completely
+    document.querySelectorAll('.login-form').forEach(form => {
+        form.classList.remove('active');
+        form.style.display = 'none';
+    });
+    
+    // Step 3: Assign active styling to the chosen tab element and target form wrapper
+    activeTab.classList.add('active');
+    formToShow.classList.add('active');
+}
+
+function resetToStudentTab() {
+    switchActiveForm(tabStudent, studentForm);
+}
+
+// Clean event trigger routes that ensure only ONE layout displays at a time
+tabStudent.addEventListener('click', () => {
+    switchActiveForm(tabStudent, studentForm);
 });
 
-// Clean slate form system resetting utility
-function resetPortalForms() {
-    studentLoginForm.reset();
-    staffLoginForm.reset();
-    studentErrorMsg.style.display = 'none';
-    staffErrorMsg.style.display = 'none';
-}
+tabSignup.addEventListener('click', () => {
+    switchActiveForm(tabSignup, signupForm);
+});
 
-// --- INTERACTIVE SYSTEM SWITCH TABS ---
-tabStudent.addEventListener('click', () => switchPortalMode('student'));
-tabStaff.addEventListener('click', () => switchPortalMode('staff'));
+tabStaff.addEventListener('click', () => {
+    switchActiveForm(tabStaff, staffForm);
+});
 
-function switchPortalMode(targetMode) {
-    // Hide active warning indicators on shift transition
-    studentErrorMsg.style.display = 'none';
-    staffErrorMsg.style.display = 'none';
-
-    if (targetMode === 'student') {
-        tabStudent.classList.add('active');
-        tabStaff.classList.remove('active');
-        studentLoginForm.classList.add('active');
-        staffLoginForm.classList.remove('active');
-    } else {
-        tabStaff.classList.add('active');
-        tabStudent.classList.remove('active');
-        staffLoginForm.classList.add('active');
-        studentLoginForm.classList.remove('active');
-    }
-}
-
-// =======================================================
-// SUBMISSION LISTENER 1: STUDENT CLOUD ROUTER
-// =======================================================
-studentLoginForm.addEventListener('submit', async (e) => {
+// ==========================================
+// 3. STUDENT PORTAL LIVE AUTHENTICATION
+// ==========================================
+studentForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    studentErrorMsg.style.display = 'none';
+    clearErrorMessages();
     
     const submitBtn = document.getElementById('studentSubmitBtn');
-    const idValue = document.getElementById('studentId').value.trim();
-    const passValue = document.getElementById('studentPassword').value.trim();
+    const idVal = document.getElementById('studentId').value;
+    const passVal = document.getElementById('studentPassword').value;
 
     submitBtn.innerText = "Verifying Credentials...";
     submitBtn.disabled = true;
@@ -72,87 +120,94 @@ studentLoginForm.addEventListener('submit', async (e) => {
     try {
         const response = await fetch(`${SCRIPT_URL}?action=login`, {
             method: 'POST',
-            body: JSON.stringify({ id: idValue, password: passValue })
+            body: JSON.stringify({ id: idVal, password: passVal })
         });
         const result = await response.json();
 
         if (result.status === "success") {
-            // Save profile details to session mapping layer
-            sessionStorage.setItem("studentProfile", JSON.stringify(result.data));
-            window.location.href = 'dashboard.html';
+            showToast("Login Successful! Launching profile...", "success");
+            // Cache specific details about who logged in to parse their custom dashboard filters
+            sessionStorage.setItem('studentName', result.data.name);
+            sessionStorage.setItem('studentClass', result.data.className);
+            sessionStorage.setItem('studentID', result.data.id);
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1000);
         } else {
             studentErrorMsg.innerText = result.message || "Invalid Student ID or Password.";
             studentErrorMsg.style.display = 'block';
+            showToast("Authentication Failed.", "error");
         }
     } catch (err) {
-        studentErrorMsg.innerText = "Database connection error. Check network state.";
-        studentErrorMsg.style.display = 'block';
+        showToast("Server interface timeout.", "error");
     } finally {
         submitBtn.innerText = "Login to Dashboard";
         submitBtn.disabled = false;
     }
 });
 
-// =======================================================
-// SUBMISSION LISTENER 2: LOCAL HARDCODED STAFF ROUTER
-// =======================================================
-staffLoginForm.addEventListener('submit', (e) => {
+// ==========================================
+// 4. NEW STUDENT SELF-REGISTRATION QUEUE 
+// ==========================================
+signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    staffErrorMsg.style.display = 'none';
+    const submitBtn = document.getElementById('signUpSubmitBtn');
     
-    const userValue = document.getElementById('username').value.trim();
-    const passValue = document.getElementById('password').value.trim();
+    const payload = {
+        name: document.getElementById('signUpName').value,
+        class: document.getElementById('signUpClass').value,
+        id: document.getElementById('signUpID').value,
+        password: document.getElementById('signUpPass').value,
+        phone: document.getElementById('signUpPhone').value
+    };
 
-    // Front-end immediate conditional authenticator gate
-    if (userValue === 'VRA_STAFF' && passValue === 'SecureStaff2026!') {
-        sessionStorage.setItem('staffLoggedIn', 'true');
-        window.location.href = 'teacher-panel.html';
-    } else {
-        staffErrorMsg.innerText = "Invalid Staff Credentials. Access Denied.";
-        staffErrorMsg.style.display = 'block';
-    }
-});
-function showToast(message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `<span>${message}</span>`;
-    
-    container.appendChild(toast);
-
-    // Auto-remove after 4 seconds
-    setTimeout(() => {
-        toast.classList.add('fade-out');
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
-}
-async function executeDeletion(sheetName, rowNum, context) {
-    // Stage 1: Browser Confirmation (Safety Gate)
-    if (!confirm(`Are you sure you want to permanently delete this ${context}? This action cannot be undone.`)) {
-        showToast("Deletion cancelled.", "error"); // Optional: let them know it was aborted
-        return;
-    }
+    submitBtn.innerText = "Submitting to Roster...";
+    submitBtn.disabled = true;
 
     try {
-        // Stage 2: Triggering the Apps Script Deletion
-        const response = await fetch(`${SCRIPT_URL}?action=deleteRow`, { 
+        const response = await fetch(`${SCRIPT_URL}?action=submitJoinRequest`, { 
             method: 'POST', 
-            body: JSON.stringify({ sheetName: sheetName, rowNum: rowNum }) 
+            body: JSON.stringify(payload) 
         });
         const result = await response.json();
 
         if (result.status === "success") {
-            // Stage 3: Success Notification
-            showToast(`${context.charAt(0).toUpperCase() + context.slice(1)} deleted from database.`, "success");
-            
-            // Stage 4: Refresh the specific table without reloading page
-            if (context === 'student') refreshStudentsTable();
-            if (context === 'resource') refreshResourcesTable();
+            showToast("Application logged! Awaiting staff authorization clearance.", "success");
+            signupForm.reset();
+            // Automatically switch back to login view so they know where to enter details later
+            setTimeout(() => resetToStudentTab(), 2000);
         } else {
-            showToast(result.message || "Deletion failed. Check spreadsheet permissions.", "error");
+            showToast("Submission dropped: " + result.message, "error");
         }
-    } catch (err) { 
-        console.error("Deletion Error:", err);
-        showToast("Network error. Record was not deleted.", "error"); 
+    } catch (err) {
+        showToast("Gateway validation timeout.", "error");
+    } finally {
+        submitBtn.innerText = "Submit Registration Request";
+        submitBtn.disabled = false;
     }
-}
+});
+
+// ==========================================
+// 5. STAFF GATEWAY STATIC VERIFIER
+// ==========================================
+staffForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearErrorMessages();
+
+    const userVal = document.getElementById('username').value.trim();
+    const passVal = document.getElementById('password').value.trim();
+
+    // Replace these placeholder strings with your own static team logins
+    if (userVal === "admin" && passVal === "vracademics2026") {
+        showToast("Access Authorized. Booting control center...", "success");
+        sessionStorage.setItem('staffLoggedIn', 'true');
+        
+        setTimeout(() => {
+            window.location.href = 'teacher-panel.html';
+        }, 1000);
+    } else {
+        staffErrorMsg.style.display = 'block';
+        showToast("Access Denied.", "error");
+    }
+});
