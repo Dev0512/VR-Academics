@@ -24,11 +24,14 @@
         <div class="login-card">
             <button type="button" class="close-btn" id="closeLoginBtn">&times;</button>
             
-            <div class="tab-container">
-                <button type="button" class="tab-btn active" id="tabStudent">Student Portal</button>
-                <button type="button" class="tab-btn" id="tabStaff">Staff Portal</button>
+            <!-- UPGRADED TAB NAVIGATION LAYOUT CONTAINER -->
+            <div class="tab-container" style="display: flex; gap: 4px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
+                <button type="button" class="tab-btn active" id="tabStudent" style="flex: 1; font-size: 13px; padding: 8px 4px;">Student Login</button>
+                <button type="button" class="tab-btn" id="tabSignup" style="flex: 1; font-size: 13px; padding: 8px 4px;">Request Access</button>
+                <button type="button" class="tab-btn" id="tabStaff" style="flex: 1; font-size: 13px; padding: 8px 4px;">Staff Portal</button>
             </div>
-
+            
+            <!-- FORM 1: STUDENT LOGIN PORTAL FORM GRID -->
             <form id="studentLoginForm" class="login-form active">
                 <h2>Student Login</h2>
                 <div class="input-group">
@@ -43,7 +46,43 @@
                 <div class="error-msg" id="studentErrorMsg">Invalid Student ID or Password.</div>
             </form>
 
-            <form id="staffLoginForm" class="login-form">
+            <!-- ========================================================================= -->
+            <!-- NEW FORM 2: NEW STUDENT STAGING ACCESS REGISTRATION SIGNUP FORM           -->
+            <!-- ========================================================================= -->
+            <form id="studentSignupForm" class="login-form" style="display: none;">
+                <h2>Request Dashboard Access</h2>
+                <p style="color: #64748b; font-size: 13px; margin-bottom: 15px; line-height: 1.4;">Submit your credentials to staff registers. You will unlock system logins following teacher verification approval tokens.</p>
+                
+                <div class="input-group">
+                    <label for="signUpName">Full Name</label>
+                    <input type="text" id="signUpName" required placeholder="Name">
+                </div>
+                <div class="input-group">
+                    <label for="signUpClass">Target Class / Batch</label>
+                    <select id="signUpClass" required style="width: 100%; padding: 10px; border: 1px solid; border-radius: 6px;">
+                        <option value="9th">Class 9th</option>
+                        <option value="10th">Class 10th</option>
+                        <option value="11th">Class 11th</option>
+                        <option value="12th">Class 12th</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="signUpID">Proposed Login ID</label>
+                    <input type="text" id="signUpID" required placeholder="Choose a tracking username">
+                </div>
+                <div class="input-group">
+                    <label for="signUpPass">Account Password</label>
+                    <input type="password" id="signUpPass" required placeholder="••••••••">
+                </div>
+                <div class="input-group">
+                    <label for="signUpPhone">Parent / Student Mobile No.</label>
+                    <input type="tel" id="signUpPhone" required placeholder="10-digit smartphone number">
+                </div>
+                <button type="submit" class="login-submit" id="signUpSubmitBtn" style="background: #00f2fe; color: #0f172a;">Submit Registration Request</button>
+            </form>
+
+            <!-- FORM 3: ADMINISTRATIVE INSTRUCTOR LOGINS PORTAL ENGINE -->
+            <form id="staffLoginForm" class="login-form" style="display: none;">
                 <h2>Staff Login</h2>
                 <div class="input-group">
                     <label for="username">Username</label>
@@ -59,8 +98,10 @@
 
         </div>
     </div>
-    <!-- Modern Notification Container -->
+
+    <!-- Modern Floating Notification Toast UI Element Container -->
     <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+    
     <script src="index.js"></script>
 </body>
 </html>

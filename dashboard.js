@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWvJYEEx-fIt8_W78w8SWNC2g5z5EOVE8GodxXBJ5UlGtBRSfwwDigVLO1OwAbs03mOw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwA9kC29oWeo6oxPX4G88BqcaOu9G_6cKzY7ms4Eo7ERtyosGg3L-kqauMKhDBVLXVA9g/exec";
 let allResources = [];
 
 document.addEventListener("DOMContentLoaded", () => {
