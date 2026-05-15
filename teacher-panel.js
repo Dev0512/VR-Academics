@@ -1,4 +1,5 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwA9kC29oWeo6oxPX4G88BqcaOu9G_6cKzY7ms4Eo7ERtyosGg3L-kqauMKhDBVLXVA9g/exec";
+// CRITICAL: Update this URL to match your newest deployment Web App URL exactly!
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyFoyYB5gN6mtwhdmaUFN5Yb_rx87JY63HtgXslfb_K3GsxconZ9VmVX0y_BW5Q7LaZag/exec";
 
 // ==========================================
 // PART 1: CORE ORCHESTRATION & SETUP
@@ -7,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshStudentsTable();
     refreshResourcesTable();
     refreshApprovalsTable(); 
+    setupSubjectFilters(); // Initializes commerce blockages for junior high tracks
 });
 
 function showToast(message, type = 'success') {
@@ -54,6 +56,40 @@ const toBase64 = file => new Promise((resolve, reject) => {
     reader.onload = () => resolve(reader.result.split(',')[1]);
     reader.onerror = error => reject(error);
 });
+
+// Dynamic Dropdown Filtering Engine for Junior Classes
+function setupSubjectFilters() {
+    const resourceClassSelect = document.getElementById('resClass');
+    const resourceSubjectSelect = document.getElementById('resSubject');
+
+    if (resourceClassSelect && resourceSubjectSelect) {
+        const originalSubjects = Array.from(resourceSubjectSelect.options).map(opt => ({
+            value: opt.value,
+            text: opt.text
+        }));
+
+        resourceClassSelect.addEventListener('change', () => {
+            const selectedClass = resourceClassSelect.value;
+            const currentSubjectValue = resourceSubjectSelect.value;
+
+            resourceSubjectSelect.innerHTML = "";
+
+            originalSubjects.forEach(sub => {
+                const isCommerce = ["Accounts", "Economics", "B.St"].includes(sub.value);
+                const isJuniorGrade = ["9th", "10th"].includes(selectedClass);
+
+                if (isJuniorGrade && isCommerce) return; 
+
+                const newOption = new Option(sub.text, sub.value);
+                resourceSubjectSelect.add(newOption);
+            });
+
+            if (Array.from(resourceSubjectSelect.options).some(opt => opt.value === currentSubjectValue)) {
+                resourceSubjectSelect.value = currentSubjectValue;
+            }
+        });
+    }
+}
 
 // ==========================================
 // PART 2: ACTIVE STUDENT MANAGEMENT CORE

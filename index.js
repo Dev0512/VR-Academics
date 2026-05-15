@@ -1,4 +1,5 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwA9kC29oWeo6oxPX4G88BqcaOu9G_6cKzY7ms4Eo7ERtyosGg3L-kqauMKhDBVLXVA9g/exec";
+// CRITICAL: Ensure this matches your absolute newest Google Apps Script deployment URL!
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyFoyYB5gN6mtwhdmaUFN5Yb_rx87JY63HtgXslfb_K3GsxconZ9VmVX0y_BW5Q7LaZag/exec";
 
 // ==========================================
 // 1. CORE INITIALIZATION & MODAL TOGGLES
@@ -8,23 +9,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const openLoginBtn = document.getElementById('openLoginBtn');
     const closeLoginBtn = document.getElementById('closeLoginBtn');
 
-    // Open Modal
     if (openLoginBtn) {
         openLoginBtn.addEventListener('click', () => {
             loginModal.classList.add('active');
-            // Default to student login view on open
             resetToStudentTab();
         });
     }
 
-    // Close Modal
     if (closeLoginBtn) {
         closeLoginBtn.addEventListener('click', () => {
             loginModal.classList.remove('active');
         });
     }
 
-    // Close Modal by clicking overlay shadow
     window.addEventListener('click', (e) => {
         if (e.target === loginModal) {
             loginModal.classList.remove('active');
@@ -32,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Universal Toast Notification System
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -68,20 +64,13 @@ function clearErrorMessages() {
     if (staffErrorMsg) staffErrorMsg.style.display = 'none';
 }
 
-// Helper function to manage layout engine visibility states
 function switchActiveForm(activeTab, formToShow) {
     clearErrorMessages();
-    
-    // Step 1: Remove 'active' selection states from all upper buttons
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    
-    // Step 2: Remove active visibility markers from ALL forms and hide them completely
     document.querySelectorAll('.login-form').forEach(form => {
         form.classList.remove('active');
         form.style.display = 'none';
     });
-    
-    // Step 3: Assign active styling to the chosen tab element and target form wrapper
     activeTab.classList.add('active');
     formToShow.classList.add('active');
 }
@@ -90,18 +79,9 @@ function resetToStudentTab() {
     switchActiveForm(tabStudent, studentForm);
 }
 
-// Clean event trigger routes that ensure only ONE layout displays at a time
-tabStudent.addEventListener('click', () => {
-    switchActiveForm(tabStudent, studentForm);
-});
-
-tabSignup.addEventListener('click', () => {
-    switchActiveForm(tabSignup, signupForm);
-});
-
-tabStaff.addEventListener('click', () => {
-    switchActiveForm(tabStaff, staffForm);
-});
+tabStudent.addEventListener('click', () => { switchActiveForm(tabStudent, studentForm); });
+tabSignup.addEventListener('click', () => { switchActiveForm(tabSignup, signupForm); });
+tabStaff.addEventListener('click', () => { switchActiveForm(tabStaff, staffForm); });
 
 // ==========================================
 // 3. STUDENT PORTAL LIVE AUTHENTICATION
@@ -126,7 +106,6 @@ studentForm.addEventListener('submit', async (e) => {
 
         if (result.status === "success") {
             showToast("Login Successful! Launching profile...", "success");
-            // Cache specific details about who logged in to parse their custom dashboard filters
             sessionStorage.setItem('studentName', result.data.name);
             sessionStorage.setItem('studentClass', result.data.className);
             sessionStorage.setItem('studentID', result.data.id);
@@ -168,20 +147,29 @@ signupForm.addEventListener('submit', async (e) => {
     try {
         const response = await fetch(`${SCRIPT_URL}?action=submitJoinRequest`, { 
             method: 'POST', 
+            mode: 'cors',
             body: JSON.stringify(payload) 
         });
-        const result = await response.json();
+        
+        const textData = await response.text();
+        let result;
+        
+        try {
+            result = JSON.parse(textData);
+        } catch(parseError) {
+            showToast("Server returned an invalid data format.", "error");
+            return;
+        }
 
-        if (result.status === "success") {
-            showToast("Application logged! Awaiting staff authorization clearance.", "success");
+        if (result && result.status === "success") {
+            showToast("Application logged! Awaiting staff clearance.", "success");
             signupForm.reset();
-            // Automatically switch back to login view so they know where to enter details later
             setTimeout(() => resetToStudentTab(), 2000);
         } else {
-            showToast("Submission dropped: " + result.message, "error");
+            showToast("Submission dropped: " + (result.message || "Unknown error"), "error");
         }
     } catch (err) {
-        showToast("Gateway validation timeout.", "error");
+        showToast("Browser block or network processing error.", "error");
     } finally {
         submitBtn.innerText = "Submit Registration Request";
         submitBtn.disabled = false;
@@ -198,7 +186,6 @@ staffForm.addEventListener('submit', (e) => {
     const userVal = document.getElementById('username').value.trim();
     const passVal = document.getElementById('password').value.trim();
 
-    // Replace these placeholder strings with your own static team logins
     if (userVal === "admin" && passVal === "vracademics2026") {
         showToast("Access Authorized. Booting control center...", "success");
         sessionStorage.setItem('staffLoggedIn', 'true');
