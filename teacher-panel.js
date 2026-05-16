@@ -1,5 +1,4 @@
-// CRITICAL: Update this URL to match your newest deployment Web App URL exactly!
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyFoyYB5gN6mtwhdmaUFN5Yb_rx87JY63HtgXslfb_K3GsxconZ9VmVX0y_BW5Q7LaZag/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-h4118pk_xz7Z9txxTUJjj2xV8Qo6LFb9Am7sA0X3fFzRbwMr-bqO0AWFigaprCQOMA/exec";
 
 // ==========================================
 // PART 1: CORE ORCHESTRATION & SETUP
@@ -8,7 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshStudentsTable();
     refreshResourcesTable();
     refreshApprovalsTable(); 
-    setupSubjectFilters(); // Initializes commerce blockages for junior high tracks
+    refreshNoticesTable();
+    refreshInquiriesTable();
+    refreshCalendarTable(); // NEW: Fire initial calendar dashboard sync 
+    setupSubjectFilters();
 });
 
 function showToast(message, type = 'success') {
@@ -57,7 +59,6 @@ const toBase64 = file => new Promise((resolve, reject) => {
     reader.onerror = error => reject(error);
 });
 
-// Dynamic Dropdown Filtering Engine for Junior Classes
 function setupSubjectFilters() {
     const resourceClassSelect = document.getElementById('resClass');
     const resourceSubjectSelect = document.getElementById('resSubject');
@@ -106,10 +107,7 @@ async function refreshStudentsTable() {
                 tbody.innerHTML += `<tr><td>${s.name}</td><td>Class ${s.class}</td><td><code>${s.id}</code></td><td><button class="delete-row-btn" onclick="executeDeletion('Students', ${s.rowNum}, 'student')">Remove</button></td></tr>`;
             });
         }
-    } catch(err) { 
-        console.error("Sync failure.");
-        showToast("Failed to sync active rosters.", "error");
-    }
+    } catch(err) { showToast("Failed to sync active rosters.", "error"); }
 }
 
 document.getElementById('studentForm').addEventListener('submit', async (e) => {
@@ -128,8 +126,6 @@ document.getElementById('studentForm').addEventListener('submit', async (e) => {
             showToast("Student profile saved directly!", "success");
             document.getElementById('studentForm').reset();
             refreshStudentsTable();
-        } else {
-            showToast(result.message || "Execution error.", "error");
         }
     } catch (err) { showToast("Network handshake failure.", "error"); }
 });
@@ -149,9 +145,7 @@ async function refreshResourcesTable() {
                 tbody.innerHTML += `<tr><td><strong>${r.subject}</strong></td><td>${r.topic}</td><td>Class ${r.class}</td><td><button class="delete-row-btn" onclick="executeDeletion('Resources', ${r.rowNum}, 'resource')">Delete</button></td></tr>`;
             });
         }
-    } catch(err) { 
-        showToast("Failed to refresh catalog files.", "error");
-    }
+    } catch(err) { showToast("Failed to refresh catalog files.", "error"); }
 }
 
 document.getElementById('resourceForm').addEventListener('submit', async (e) => {
@@ -173,21 +167,11 @@ document.getElementById('resourceForm').addEventListener('submit', async (e) => 
         submitBtn.innerText = "Encoding File Stream...";
         submitBtn.disabled = true;
         const file = fileInput.files[0];
-        
-        if (file.size > 150000) { 
-            showToast("File limits clipped out! Stay under 150KB.", "error");
-            submitBtn.innerText = "Publish to Dashboard";
-            submitBtn.disabled = false;
-            return;
-        }
+        if (file.size > 5000000) { showToast("Stay under 5MB.", "error"); submitBtn.disabled = false; return; }
         try {
             payload.fileData = await toBase64(file);
             payload.fileMime = file.type;
-        } catch (err) {
-            showToast("Binary structure compilation crash.", "error");
-            submitBtn.disabled = false;
-            return;
-        }
+        } catch (err) { showToast("Structure crash.", "error"); submitBtn.disabled = false; return; }
     } else {
         payload.link = document.getElementById('resLink').value;
     }
@@ -196,12 +180,12 @@ document.getElementById('resourceForm').addEventListener('submit', async (e) => 
         const response = await fetch(`${SCRIPT_URL}?action=addResource`, { method: 'POST', body: JSON.stringify(payload) });
         const result = await response.json();
         if (result.status === "success") {
-            showToast("Material distributed to targeted class!", "success");
+            showToast("Material distributed!", "success");
             document.getElementById('resourceForm').reset();
             toggleSourceInput();
             refreshResourcesTable();
         }
-    } catch (err) { showToast("Resource cluster gateway timeout.", "error"); }
+    } catch (err) { showToast("Gateway timeout.", "error"); }
     finally { submitBtn.innerText = "Publish to Dashboard"; submitBtn.disabled = false; }
 });
 
@@ -219,60 +203,33 @@ async function refreshApprovalsTable() {
         if (result.status === "success" && result.requests.length > 0) {
             badge.innerText = result.requests.length;
             badge.style.display = "inline-block";
-            
             result.requests.forEach(req => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${req.name}</td>
-                        <td>Class ${req.class}</td>
-                        <td><code>${req.id}</code></td>
-                        <td>
-                            <button class="submit-btn" style="padding: 6px 12px; font-size: 13px; margin-right: 5px;" onclick="processApproval(${req.rowNum}, true)">Approve Access</button>
-                            <button class="delete-row-btn" style="padding: 6px 12px; font-size: 13px;" onclick="processApproval(${req.rowNum}, false)">Deny</button>
-                        </td>
-                    </tr>`;
+                tbody.innerHTML += `<tr><td>${req.name}</td><td>Class ${req.class}</td><td><code>${req.id}</code></td><td><button class="submit-btn" style="padding: 6px 12px; font-size: 13px; margin-right: 5px;" onclick="processApproval(${req.rowNum}, true)">Approve Access</button><button class="delete-row-btn" style="padding: 6px 12px; font-size: 13px;" onclick="processApproval(${req.rowNum}, false)">Deny</button></td></tr>`;
             });
         } else {
             badge.style.display = "none";
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b; padding:25px;">No pending registration applications found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b; padding:25px;">No pending applications found.</td></tr>`;
         }
-    } catch(err) { console.error("Error connecting with structural approval buffers."); }
+    } catch(err) { console.error("Error connecting with approvals buffer."); }
 }
 
 async function processApproval(rowNum, statusFlag) {
     const targetEndpoint = statusFlag ? 'approveStudent' : 'deleteRow';
-    const safetyMessage = statusFlag 
-        ? "Authorize account clearance permissions and migrate profile into structural active student registers?" 
-        : "Deny entry access rules and purge registration request payload?";
-        
-    if (!confirm(safetyMessage)) {
-        showToast("Operation cancelled.", "error");
-        return;
-    }
+    if (!confirm("Proceed with this action request?")) return;
     
-    const processingPayload = statusFlag 
-        ? { rowNum: rowNum } 
-        : { sheetName: 'Approvals', rowNum: rowNum };
-
+    const processingPayload = statusFlag ? { rowNum: rowNum } : { sheetName: 'Approvals', rowNum: rowNum };
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=${targetEndpoint}`, { 
-            method: 'POST', 
-            body: JSON.stringify(processingPayload) 
-        });
+        const response = await fetch(`${SCRIPT_URL}?action=${targetEndpoint}`, { method: 'POST', body: JSON.stringify(processingPayload) });
         const result = await response.json();
-        
         if (result.status === "success") {
-            showToast(statusFlag ? "Access rules established! Profile initialized." : "Application record dropped.", "success");
-            refreshApprovalsTable();
-            refreshStudentsTable(); 
-        } else {
-            showToast("Database state alteration error.", "error");
+            showToast("Queue altered cleanly.", "success");
+            refreshApprovalsTable(); refreshStudentsTable(); 
         }
-    } catch (err) { showToast("Pipeline transactional error.", "error"); }
+    } catch (err) { showToast("Pipeline error.", "error"); }
 }
 
 // ==========================================
-// PART 5: DELETION ENGINE & SESSION CLOSURES
+// PART 5: DELETION ENGINE & ROUTING MANAGERS
 // ==========================================
 async function executeDeletion(sheetName, rowNum, context) {
     if (!confirm(`Are you completely certain you want to destroy this ${context} row index mapping permanently?`)) {
@@ -286,16 +243,142 @@ async function executeDeletion(sheetName, rowNum, context) {
             showToast(`${context.charAt(0).toUpperCase() + context.slice(1)} records purged.`, "success");
             if (context === 'student') refreshStudentsTable();
             if (context === 'resource') refreshResourcesTable();
-        } else {
-            showToast("Deletion execution breakdown.", "error");
+            if (context === 'announcement') refreshNoticesTable();
+            if (context === 'inquiry') refreshInquiriesTable();
+            if (context === 'calendar') refreshCalendarTable(); // NEW: Bind instant table update callback
         }
     } catch (err) { showToast("Database synchronization dropped.", "error"); }
 }
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    sessionStorage.removeItem('staffLoggedIn');
-    showToast("Session disconnected. Relocating...", "success");
-    setTimeout(() => {
-        window.location.href = 'home.html';
-    }, 1000);
+// ==========================================
+// PART 6: INSTITUTE NOTICE ANNOUNCEMENT SYSTEM
+// ==========================================
+async function refreshNoticesTable() {
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getDashboardData`, { method: 'POST', body: JSON.stringify({ className: "9th" }) });
+        const result = await response.json();
+        const tbody = document.getElementById("noticesTableBody");
+        tbody.innerHTML = "";
+        if (result.status === "success") {
+            if (result.notices.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#64748b; padding:25px;">No active announcements found.</td></tr>`; return; }
+            result.notices.forEach((item, index) => {
+                const formattedDate = item.date ? new Date(item.date).toLocaleDateString() : 'Recent';
+                tbody.innerHTML += `<tr><td><small style="color:#00f2fe; font-weight:600;">${formattedDate}</small></td><td><p style="font-size:14px; color:#e2e8f0; text-align:left;">${item.content}</p></td><td><button class="delete-row-btn" onclick="executeDeletion('Notice', ${index + 2}, 'announcement')">Delete</button></td></tr>`;
+            });
+        }
+    } catch(err) { showToast("Failed to refresh announcements.", "error"); }
+}
+
+document.getElementById('noticeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('noticeSubmitBtn');
+    const noticeContentInput = document.getElementById('noticeContent');
+    const payload = { content: noticeContentInput.value.trim() };
+    submitBtn.innerText = "Broadcasting..."; submitBtn.disabled = true;
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=addNotice`, { method: 'POST', body: JSON.stringify(payload) });
+        const result = await response.json();
+        if (result.status === "success") { showToast("Notice live!", "success"); document.getElementById('noticeForm').reset(); refreshNoticesTable(); }
+    } catch (err) { showToast("Notice network timeout.", "error"); }
+    finally { submitBtn.innerText = "Broadcast Announcement"; submitBtn.disabled = false; }
 });
+
+// ==========================================
+// PART 7: PUBLIC INQUIRY VIEWING OPERATIONS
+// ==========================================
+async function refreshInquiriesTable() {
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getInquiriesList`, { method: 'POST', body: JSON.stringify({}) });
+        const result = await response.json();
+        const tbody = document.getElementById("inquiriesTableBody");
+        if(!tbody) return; tbody.innerHTML = "";
+        if (result.status === "success") {
+            if (result.inquiries.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b; padding:25px;">No inquiries found.</td></tr>`; return; }
+            result.inquiries.forEach(inq => {
+                const formattedDate = inq.timestamp ? new Date(inq.timestamp).toLocaleDateString() : 'Recent';
+                tbody.innerHTML += `<tr><td><small style="color:#00f2fe; font-weight:600;">${formattedDate}</small></td><td><strong>${inq.name}</strong></td><td><span class="subject-badge">${inq.class}</span></td><td>${inq.phone}</td><td><p style="font-size:13px; max-width:300px; color:#94a3b8; white-space:pre-wrap; text-align:left;">${inq.message || '-'}</p></td><td><button class="delete-row-btn" onclick="executeDeletion('Inquiries', ${inq.rowNum}, 'inquiry')">Clear</button></td></tr>`;
+            });
+        }
+    } catch(err) { console.error(err); }
+}
+
+// ==========================================
+// FIXED: PART 8: ACADEMIC CALENDAR ADMINISTRATIVE OPERATIONS 
+// ==========================================
+async function refreshCalendarTable() {
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getCalendarEvents`, { method: 'POST', body: JSON.stringify({}) });
+        const result = await response.json();
+        const tbody = document.getElementById("calendarTableBody");
+        if(!tbody) return;
+        tbody.innerHTML = "";
+        
+        if (result.status === "success" && result.events) {
+            if (result.events.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:25px;">No scheduled track items found on sheet registers.</td></tr>`;
+                return;
+            }
+            
+            result.events.forEach((ev, index) => {
+                const formattedDate = ev.date ? new Date(ev.date).toLocaleDateString() : 'Pending';
+                const rowNum = index + 2; // Offset Excel Row 1 Header index
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong style="color:#f1f5f9;">${formattedDate}</strong></td>
+                        <td><span style="background:rgba(255,255,255,0.04); padding:4px 8px; border-radius:4px; font-size:12px;">Class ${ev.targetClass}</span></td>
+                        <td style="text-align:left;">${ev.title}</td>
+                        <td><em style="color:#00f2fe; font-size:13px; font-weight:600;">${ev.type}</em></td>
+                        <td>
+                            <button class="delete-row-btn" onclick="executeDeletion('Events', ${rowNum}, 'calendar')">Remove</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+    } catch (err) {
+        console.error("Calendar operational roster sync crash:", err);
+    }
+}
+
+document.getElementById('calendarForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('calendarSubmitBtn');
+    
+    const payload = {
+        date: document.getElementById('eventDate').value,
+        targetClass: document.getElementById('eventClass').value,
+        title: document.getElementById('eventTitle').value.trim(),
+        type: document.getElementById('eventType').value
+    };
+
+    btn.innerText = "Publishing Event Registry...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=addCalendarEvent`, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        
+        if (result.status === "success") {
+            showToast("Academic event successfully synchronized!", "success");
+            document.getElementById('calendarForm').reset();
+            refreshCalendarTable(); // Re-render staff ledger instantly
+        }
+    } catch (err) {
+        showToast("Calendar pipeline connection drop.", "error");
+    } finally {
+        btn.innerText = "Publish Event to Ticker";
+        btn.disabled = false;
+    }
+});
+
+// Logout hook closure check
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem('staffLoggedIn');
+        window.location.href = 'index.html';
+    });
+}

@@ -8,6 +8,7 @@
 </head>
 <body>
 
+    <!-- PERSISTENT TOP GLOBAL NAVIGATION HEADER Bar -->
     <nav>
         <div class="logo">VR ACADEMICS</div>
         <div class="nav-links">
@@ -15,11 +16,60 @@
         </div>
     </nav>
 
+    <!-- WEBSITE MAIN CONTEXTUAL HERO FOCUS CONTAINER -->
     <section class="hero">
         <h1>Welcome to <span>VR Academics</span></h1>
         <p>Your premier institute for advanced academic coaching, comprehensive test preparation, and structured learning designed for high-performance students.</p>
     </section>
 
+    <!-- NEW CONTENT ELEMENT: PUBLIC ADMISSION INQUIRY INTERFACE ELEMENT -->
+    <section class="public-inquiry-section" style="padding: 60px 20px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+        <div>
+            <h2 style="font-size: 2.2rem; margin-bottom: 15px; font-weight: 700;">Begin Your Journey <span style="color: #00f2fe;">With Us</span></h2>
+            <p style="color: #64748b; line-height: 1.6; margin-bottom: 20px; font-size: 1.05rem;">Have questions regarding program curriculum benchmarks, class batch timings, fees structures, or mock tracking metrics? Submit an institutional case ledger inquiry, and our primary educational coordination desk will call you back shortly.</p>
+            <div style="display: flex; flex-direction: column; gap: 12px; color: #94a3b8;">
+                <p>📍 <strong>Campus Location:</strong> Premier Education Hub, Delhi, India</p>
+                <p>🕒 <strong>Counselling Window:</strong> 09:00 AM - 07:00 PM IST</p>
+            </div>
+        </div>
+        
+        <!-- CALL ROUTE CAPTURE INTERFACE CARD -->
+        <div class="inquiry-card" style="background: #0b0d19; border: 1px solid rgba(255,255,255,0.05); padding: 35px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.35);">
+            <h3 style="margin-bottom: 5px; font-size: 1.3rem; color: #fff;">Request Callback / Admission Information</h3>
+            <p style="color: #64748b; font-size: 13px; margin-bottom: 20px;">Provide verified communication pointers below.</p>
+            
+            <form id="publicInquiryForm" style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Prospect Student Name</label>
+                    <input type="text" id="inqName" required placeholder="e.g., Ishaan Kapravan" style="padding: 12px; border-radius: 8px; background: #121526; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px;">
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Target Class Grade Course Track</label>
+                    <select id="inqClass" required style="padding: 12px; border-radius: 8px; background: #121526; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px; width: 100%;">
+                        <option value="9th">Class 9th (Secondary Foundational)</option>
+                        <option value="10th">Class 10th (Secondary High Roster)</option>
+                        <option value="11th">Class 11th (Senior Matriculation)</option>
+                        <option value="12th">Class 12th (Advanced Board Stream)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Primary Contact Mobile Number</label>
+                    <input type="tel" id="inqPhone" required placeholder="10-digit smartphone number" style="padding: 12px; border-radius: 8px; background: #121526; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px;">
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Message Note Details</label>
+                    <textarea id="inqMessage" placeholder="Mention preferred time slots or optional stream selections..." style="padding: 12px; border-radius: 8px; background: #121526; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px; min-height: 80px; resize: vertical; font-family: inherit;"></textarea>
+                </div>
+
+                <button type="submit" id="inqSubmitBtn" style="padding: 14px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); border: none; color: #04060a; font-weight: 700; border-radius: 10px; cursor: pointer; margin-top: 5px; font-size: 14px; transition: opacity 0.2s ease;">Submit Admission Inquiry</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- MODAL OVERLAY PORTAL SCREEN -->
     <div class="modal-overlay" id="loginModal">
         <div class="login-card">
             <button type="button" class="close-btn" id="closeLoginBtn">&times;</button>
@@ -46,9 +96,7 @@
                 <div class="error-msg" id="studentErrorMsg">Invalid Student ID or Password.</div>
             </form>
 
-            <!-- ========================================================================= -->
-            <!-- NEW FORM 2: NEW STUDENT STAGING ACCESS REGISTRATION SIGNUP FORM           -->
-            <!-- ========================================================================= -->
+            <!-- FORM 2: NEW STUDENT STAGING ACCESS REGISTRATION SIGNUP FORM -->
             <form id="studentSignupForm" class="login-form" style="display: none;">
                 <h2>Request Dashboard Access</h2>
                 <p style="color: #64748b; font-size: 13px; margin-bottom: 15px; line-height: 1.4;">Submit your credentials to staff registers. You will unlock system logins following teacher verification approval tokens.</p>
