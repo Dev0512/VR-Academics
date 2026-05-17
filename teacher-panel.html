@@ -23,10 +23,11 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item active" onclick="switchTab('student-tab', this)">Manage Students</li>
-                <li class="nav-item" onclick="switchTab('resource-tab', this)">Manage Resources</li>
+                <li class="nav-item" onclick="switchTab('exam-tab', this); clearExamWorkspace(); refreshExamsHistoryLogTable();">Manage Exams</li> <li class="nav-item" onclick="switchTab('resource-tab', this)">Manage Resources</li>
                 <li class="nav-item" onclick="switchTab('notice-tab', this)">Manage Notices</li>
                 <li class="nav-item" onclick="switchTab('inquiry-tab', this)">View Inquiries</li>
                 <li class="nav-item" onclick="switchTab('calendar-tab', this)">Manage Calendar</li>
+                <li class="nav-item" onclick="switchTab('attendance-tab', this); fetchAttendanceRoster();">Manage Attendance</li>
             </ul>
         </div>
         <button class="logout-btn" id="logoutBtn">Log Out</button>
@@ -83,8 +84,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="approvalsTableBody">
-                        </tbody>
+                    <tbody id="approvalsTableBody"></tbody>
                 </table>
             </div>
 
@@ -93,14 +93,94 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Class</th>
-                            <th>Student ID</th>
-                            <th>Actions</th>
+                            <th>Student Name</th>
+                            <th>Assigned Class</th>
+                            <th>Student ID Passport</th>
+                            <th>Attendance Tracking</th> <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="studentsTableBody">
-                        </tbody>
+                    <tbody id="studentsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="exam-tab" class="tab-content">
+            <h2>Academic Exam Marks & Performance Center</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Publish test scores for specific batches and instantly calculate rankings and leaderboard percentages.</p>
+            
+            <div class="admin-form" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
+                <div class="form-group">
+                    <label for="examClassSelect">Target Exam Batch</label>
+                    <select id="examClassSelect" onchange="clearExamWorkspace()">
+                        <option value="9th">Class 9th Batch</option>
+                        <option value="10th">Class 10th Batch</option>
+                        <option value="11th">Class 11th Batch</option>
+                        <option value="12th">Class 12th Batch</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="examTopicInput">Test Topic Title</label>
+                    <input type="text" id="examTopicInput" autocomplete="off" placeholder="e.g., Kinematics Weekly Test">
+                </div>
+                <div class="form-group">
+                    <label for="examMaxMarksInput">Max Evaluation Marks</label>
+                    <input type="number" id="examMaxMarksInput" placeholder="e.g., 50" value="50">
+                </div>
+                <button type="button" class="submit-btn" style="grid-column: span 3; margin-top: 5px;" onclick="loadExamGradingRoster()">Initialize Grading Sheets</button>
+            </div>
+
+            <div class="exam-split-workspace" style="display: flex; gap: 25px; align-items: flex-start; margin-bottom: 40px;">
+                <div class="management-grid-wrapper" style="flex: 1; margin-bottom: 0;">
+                    <h3>Student Grading Roster List</h3>
+                    <form id="examScoresSubmissionForm">
+                        <table class="data-table">
+                            <thead>
+                                <tr style="background: #121526;">
+                                    <th style="text-align: left; padding-left: 15px;">Student Roster</th>
+                                    <th>Tracking ID</th>
+                                    <th style="width: 180px; text-align: center;">Enter Scored Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examGradingRosterTableBody">
+                                <tr><td colspan="3" style="text-align:center; color:#64748b; padding:25px;">Initialize parameters above to compile user listing grids...</td></tr>
+                            </tbody>
+                        </table>
+                        <button type="submit" class="submit-btn" id="examSubmitBtn" style="margin-top: 20px; display: none; width: 100%;">Save & Broadcast Exam Report Cards</button>
+                    </form>
+                </div>
+
+                <div style="width: 360px; display: flex; flex-direction: column; gap: 20px;">
+                    <div id="classAverageCard" class="management-grid-wrapper" style="text-align: center; display: none; background: rgba(0, 242, 254, 0.02); border-color: rgba(0, 242, 254, 0.2); padding: 20px; border-radius: 16px; border: 1px solid;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Class Matrix Analytics</span>
+                        <h4 style="margin: 5px 0 0 0; font-size: 28px; color: #00f2fe; font-weight: 800;" id="classAverageValueBadge">0%</h4>
+                        <p style="margin: 2px 0 0 0; font-size: 13px; color: #cbd5e1;">Overall Class Performance Average</p>
+                    </div>
+
+                    <div class="management-grid-wrapper" style="margin-bottom: 0;">
+                        <h3 style="color:#f59e0b; display:flex; align-items:center; gap:8px;">🏆 Test Rank Scoreboard</h3>
+                        <div id="examLeaderboardContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                            <p style="color:#64748b; font-size: 13px; text-align: center; padding: 20px 0;">No active rankings loaded.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="management-grid-wrapper" style="margin-top: 40px; border-top: 2px dashed rgba(255, 255, 255, 0.08); padding-top: 30px;">
+                <h3 style="color: #e2e8f0;">Published Exam Log History</h3>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">Audit historically logged test profiles or perform a total system wipe to eliminate faulty records from rosters.</p>
+                <table class="data-table">
+                    <thead>
+                        <tr style="background: #121526;">
+                            <th style="text-align: left; padding-left: 15px;">Exam Topic Title</th>
+                            <th>Class Batch</th>
+                            <th>Max Marks</th>
+                            <th>Submissions Logged</th>
+                            <th style="width: 150px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examHistoryRegistryTableBody">
+                        <tr><td colspan="5" style="text-align:center; color:#64748b; padding:25px;">Synchronizing structural exam histories...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -176,8 +256,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="resourcesTableBody">
-                        </tbody>
+                    <tbody id="resourcesTableBody"></tbody>
                 </table>
             </div>
         </div>
@@ -284,6 +363,46 @@
                         <tr><td colspan="5" style="text-align:center; color:#64748b; padding:25px;">Synchronizing institute active calendar timelines...</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <div id="attendance-tab" class="tab-content">
+            <h2>Batch Attendance Register</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Select a specific class grade batch to initialize the daily present/absent roll call ledger sheets.</p>
+            
+            <div class="admin-form" style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 30px;">
+                <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                    <label for="attClassSelect">Select Target Attendance Batch</label>
+                    <select id="attClassSelect" name="attClassSelect" onchange="fetchAttendanceRoster()">
+                        <option value="9th">Class 9th Batch</option>
+                        <option value="10th">Class 10th Batch</option>
+                        <option value="11th">Class 11th Batch</option>
+                        <option value="12th">Class 12th Batch</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                    <label for="attDateInput">Log Registry Date</label>
+                    <input type="date" id="attDateInput" name="attDateInput" required>
+                </div>
+            </div>
+
+            <div class="management-grid-wrapper">
+                <form id="attendanceRollForm">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding-left: 15px;">Student Name</th>
+                                <th style="width: 130px;">Class Grade</th>
+                                <th style="width: 140px;">System Tracking ID</th>
+                                <th style="width: 220px; text-align: center;">Roll Call Selection Check</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceRosterTableBody">
+                            <tr><td colspan="4" style="text-align:center; color:#64748b; padding:25px;">Select a batch to load matching student rosters...</td></tr>
+                        </tbody>
+                    </table>
+                    <button type="submit" class="submit-btn" id="attSubmitBtn" style="margin-top: 20px; display: none;">Save & Broadcast Attendance Roll</button>
+                </form>
             </div>
         </div>
 

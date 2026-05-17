@@ -1,5 +1,5 @@
 /* Premium Interface Theme for VR Academics Homepage */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 * {
     margin: 0;
@@ -24,6 +24,8 @@ nav {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     z-index: 100;
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -56,16 +58,18 @@ nav {
     box-shadow: 0 6px 20px rgba(0, 242, 254, 0.3);
 }
 
-/* --- HERO PRESENTATION HOUSING --- */
+/* --- OPTIMIZED HERO PRESENTATION HOUSING --- */
 .hero {
-    height: 100vh;
+    /* FIXED: Swapped 100vh for an adaptive min-height with healthy breathing padding */
+    min-height: 75vh; 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 0 24px;
+    padding: 100px 24px 60px 24px; /* Added top padding to prevent the fixed nav from clipping headers */
     background: radial-gradient(circle at center, #0f1225 0%, #06070d 100%);
+    position: relative;
 }
 
 .hero h1 {
@@ -74,6 +78,7 @@ nav {
     margin-bottom: 20px;
     letter-spacing: -1px;
     line-height: 1.2;
+    max-width: 900px; /* Limits title width on ultra-wide screens */
 }
 
 .hero h1 span {
@@ -86,8 +91,121 @@ nav {
     font-size: 1.15rem;
     color: #94a3b8;
     max-width: 620px;
-    margin-bottom: 30px;
+    margin-bottom: 0; /* Cleared out bottom margin since padding handles section spacing */
     line-height: 1.6;
+} 
+
+/* --- PUBLIC ADMISSION INQUIRY CONTENT ROW SYSTEM --- */
+.public-inquiry-section {
+    padding: 80px 8%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.public-inquiry-section h2 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.public-inquiry-section h2 span {
+    color: #00f2fe;
+}
+
+.public-inquiry-section p {
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+}
+
+.contact-details-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #94a3b8;
+}
+
+.inquiry-card {
+    background: #0b0d19;
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+}
+
+.inquiry-card h3 {
+    margin-bottom: 5px;
+    font-size: 1.3rem;
+    color: #fff;
+}
+
+.inquiry-card .sub-heading {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.input-element-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-element-wrap label {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.input-element-wrap input,
+.input-element-wrap select,
+.input-element-wrap textarea {
+    padding: 12px;
+    border-radius: 8px;
+    background: #121526;
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.input-element-wrap textarea {
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.input-element-wrap input:focus,
+.input-element-wrap select:focus,
+.input-element-wrap textarea:focus {
+    border-color: #00f2fe;
+}
+
+#inqSubmitBtn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    border: none;
+    color: #04060a;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 5px;
+    font-size: 14px;
+    transition: opacity 0.2s ease;
+}
+
+#inqSubmitBtn:hover {
+    opacity: 0.9;
 }
 
 /* --- UNIFIED LOGIN SYSTEM MODAL COMPONENT --- */
@@ -123,7 +241,6 @@ nav {
     border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    /* FIXED OVERFLOW: Auto-expands gracefully when forms get taller */
     height: auto;
     max-height: 90vh;
     overflow-y: auto;
@@ -156,7 +273,7 @@ nav {
     color: #f1f5f9;
 }
 
-/* --- EXPANDED MUTIPLEXER TAB CONTAINER SELECTION BLOCKS --- */
+/* --- EXPANDED MULTIPLEXER TAB CONTAINER SELECTION BLOCKS --- */
 .tab-container {
     display: flex;
     background: #121526;
@@ -214,6 +331,14 @@ nav {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: -0.5px;
+}
+
+.form-instructions {
+    color: #64748b; 
+    font-size: 13px; 
+    margin-bottom: 15px; 
+    line-height: 1.4;
+    text-align: left;
 }
 
 /* --- ELEMENTARY INPUTS & DROPDOWN CRADLES --- */
@@ -349,4 +474,61 @@ nav {
 @keyframes toastOut {
     from { opacity: 1; transform: translateX(0); }
     to { opacity: 0; transform: translateX(100px); }
+}
+
+/* ========================================================== */
+/* FIXED OPERATIONAL WRAPPER: 📱 MEDIA QUERY MOBILE OPTIMIZER */
+/* ========================================================== --> */
+@media (max-width: 768px) {
+    nav {
+        padding: 15px 4%; /* Compress padding sizes so things fit */
+    }
+
+    .logo {
+        font-size: 1.1rem; /* Scale font down slightly */
+    }
+
+    .portal-trigger-btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+
+    .hero {
+        min-height: 55vh; /* Shifts even shorter on mobile to bring form closer to fold lines */
+        padding-top: 120px; /* Provides safety space for mobile navigation bars */
+        padding-bottom: 40px;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero p {
+        font-size: 0.95rem;
+    }
+
+    /* Convert row split grid to vertical single stacked grid blocks */
+    .public-inquiry-section {
+        grid-template-columns: 1fr;
+        padding: 40px 5%;
+        gap: 30px;
+    }
+
+    .public-inquiry-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .inquiry-card {
+        padding: 20px; /* Leave more real estate internal space for active inputs */
+    }
+
+    .login-card {
+        padding: 25px 20px;
+        width: 92%; /* Do not clip edge regions when cards zoom active */
+    }
+
+    .tab-btn {
+        font-size: 0.75rem;
+        padding: 10px 2px;
+    }
 }

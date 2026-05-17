@@ -1,5 +1,5 @@
 // CRITICAL: Ensure this matches your absolute newest Google Apps Script deployment URL!
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-h4118pk_xz7Z9txxTUJjj2xV8Qo6LFb9Am7sA0X3fFzRbwMr-bqO0AWFigaprCQOMA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFT0X47ASH-6k5RuYmCijZVZAjBtImHYgJu6XT4Ew37LAySgni4yn5IglyzJZ2zxJiSQ/exec";
 
 // ==========================================
 // 1. CORE INITIALIZATION & MODAL TOGGLES

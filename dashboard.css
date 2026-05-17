@@ -259,3 +259,127 @@ body {
         max-height: 300px;
     }
 }
+/* =========================================================================
+   VR ACADEMICS CLEAN PERFORMANCE OVERHAUL (HORIZONTAL SCROLLBAR RECONSTRUCTION)
+   ========================================================================= */
+
+/* Overwrite table structural bottlenecks to clear out horizontal clipping boxes */
+.exams-performance-section table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 8px !important; /* Adds professional spacing between score bars */
+    min-width: 0 !important; /* Extinguishes the 400px horizontal push forcing scrollbars */
+}
+
+/* Redesign the table text rendering fields to look clean and un-cramped */
+.exams-performance-section th {
+    background: transparent !important;
+    padding: 10px 14px !important;
+    font-size: 11px !important;
+    color: #475569 !important; /* Soft industrial slate gray for labels */
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.75px !important;
+    border: none !important;
+}
+
+/* Turn standard table row indices into premium isolated content blocks */
+.exams-performance-section tbody tr {
+    background: rgba(255, 255, 255, 0.01) !important;
+    border: 1px solid rgba(255, 255, 255, 0.02) !important;
+    border-radius: 12px !important;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s !important;
+}
+
+.exams-performance-section tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Remove default row border-line dividers which cause visual clipping artifacts */
+.exams-performance-section td {
+    padding: 16px 14px !important;
+    border: none !important;
+    font-size: 13.5px !important;
+    color: #e2e8f0 !important;
+    vertical-align: middle !important;
+}
+
+/* Style individual score tracking metrics cleanly across the row template */
+.exams-performance-section td strong {
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Apply rounded cell frame boundaries to preserve standard border radius designs */
+.exams-performance-section tbody tr td:first-child {
+    border-top-left-radius: 12px !important;
+    border-bottom-left-radius: 12px !important;
+}
+
+.exams-performance-section tbody tr td:last-child {
+    border-top-right-radius: 12px !important;
+    border-bottom-right-radius: 12px !important;
+    font-weight: 800 !important; /* Bold focus for percentage readouts */
+}
+
+/* Force container layout wrappers to crop out any ugly residual scrollbars cleanly */
+.exams-performance-section div[style*="overflow-x: auto"] {
+    overflow-x: hidden !important; /* Hard delete for the horizontal viewport scroller box */
+    overflow-y: visible !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* =========================================================================
+   MEDIA QUERY RESPONSIVE COMPACT MOBILE OPTIMIZATIONS
+   ========================================================================= */
+@media (max-width: 992px) {
+    /* Break the split screen row grid layout into uniform vertical stacked columns */
+    .exams-performance-section {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        padding: 20px !important;
+    }
+
+    /* Convert row cells into independent vertical label lists on mobile devices */
+    .exams-performance-section thead {
+        display: none !important; /* Hide header row columns to avoid messy phone text wrapping */
+    }
+
+    .exams-performance-section tbody, 
+    .exams-performance-section tr {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+
+    .exams-performance-section tbody tr {
+        margin-bottom: 12px !important;
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .exams-performance-section td {
+        padding: 4px 0 !important;
+        text-align: left !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    /* Inject responsive inline table header labels live dynamically via pseudo-elements */
+    .exams-performance-section td:nth-child(1)::before { content: "Topic:"; color: #64748b; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+    .exams-performance-section td:nth-child(2)::before { content: "Marks Scored:"; color: #64748b; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+    .exams-performance-section td:nth-child(3)::before { content: "Max Limit:"; color: #64748b; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+    .exams-performance-section td:nth-child(4)::before { content: "Final Percentage:"; color: #64748b; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+
+    .exams-performance-section td:nth-child(2),
+    .exams-performance-section td:nth-child(3) {
+        text-align: right !important;
+    }
+}

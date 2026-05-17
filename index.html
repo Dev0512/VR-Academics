@@ -8,7 +8,6 @@
 </head>
 <body>
 
-    <!-- PERSISTENT TOP GLOBAL NAVIGATION HEADER Bar -->
     <nav>
         <div class="logo">VR ACADEMICS</div>
         <div class="nav-links">
@@ -16,37 +15,34 @@
         </div>
     </nav>
 
-    <!-- WEBSITE MAIN CONTEXTUAL HERO FOCUS CONTAINER -->
     <section class="hero">
         <h1>Welcome to <span>VR Academics</span></h1>
         <p>Your premier institute for advanced academic coaching, comprehensive test preparation, and structured learning designed for high-performance students.</p>
     </section>
 
-    <!-- NEW CONTENT ELEMENT: PUBLIC ADMISSION INQUIRY INTERFACE ELEMENT -->
-    <section class="public-inquiry-section" style="padding: 60px 20px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
-        <div>
-            <h2 style="font-size: 2.2rem; margin-bottom: 15px; font-weight: 700;">Begin Your Journey <span style="color: #00f2fe;">With Us</span></h2>
-            <p style="color: #64748b; line-height: 1.6; margin-bottom: 20px; font-size: 1.05rem;">Have questions regarding program curriculum benchmarks, class batch timings, fees structures, or mock tracking metrics? Submit an institutional case ledger inquiry, and our primary educational coordination desk will call you back shortly.</p>
-            <div style="display: flex; flex-direction: column; gap: 12px; color: #94a3b8;">
+    <section class="public-inquiry-section">
+        <div class="inquiry-text-block">
+            <h2>Begin Your Journey <span>With Us</span></h2>
+            <p>Have questions regarding program curriculum benchmarks, class batch timings, fees structures, or mock tracking metrics? Submit an institutional case ledger inquiry, and our primary educational coordination desk will call you back shortly.</p>
+            <div class="contact-details-stack">
                 <p>📍 <strong>Campus Location:</strong> Premier Education Hub, Delhi, India</p>
                 <p>🕒 <strong>Counselling Window:</strong> 09:00 AM - 07:00 PM IST</p>
             </div>
         </div>
         
-        <!-- CALL ROUTE CAPTURE INTERFACE CARD -->
-        <div class="inquiry-card" style="background: #0b0d19; border: 1px solid rgba(255,255,255,0.05); padding: 35px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.35);">
-            <h3 style="margin-bottom: 5px; font-size: 1.3rem; color: #fff;">Request Callback / Admission Information</h3>
-            <p style="color: #64748b; font-size: 13px; margin-bottom: 20px;">Provide verified communication pointers below.</p>
+        <div class="inquiry-card">
+            <h3>Request Callback / Admission Information</h3>
+            <p class="sub-heading">Provide verified communication pointers below.</p>
             
-            <form id="publicInquiryForm" style="display: flex; flex-direction: column; gap: 15px;">
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Prospect Student Name</label>
-                    <input type="text" id="inqName" required placeholder="e.g., Ishaan Kapravan" style="padding: 12px; border-radius: 8px; background: #121526; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px;">
+            <form id="publicInquiryForm">
+                <div class="input-element-wrap">
+                    <label for="inqName">Prospect Student Name</label>
+                    <input type="text" id="inqName" name="inqName" autocomplete="name" required placeholder="e.g., Ishaan Kapravan">
                 </div>
                 
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Target Class Grade Course Track</label>
-                    <select id="inqClass" required style="padding: 12px; border-radius: 8px; background: #121526; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px; width: 100%;">
+                <div class="input-element-wrap">
+                    <label for="inqClass">Target Class Grade Course Track</label>
+                    <select id="inqClass" name="inqClass" required>
                         <option value="9th">Class 9th (Secondary Foundational)</option>
                         <option value="10th">Class 10th (Secondary High Roster)</option>
                         <option value="11th">Class 11th (Senior Matriculation)</option>
@@ -54,60 +50,56 @@
                     </select>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Primary Contact Mobile Number</label>
-                    <input type="tel" id="inqPhone" required placeholder="10-digit smartphone number" style="padding: 12px; border-radius: 8px; background: #121526; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px;">
+                <div class="input-element-wrap">
+                    <label for="inqPhone">Primary Contact Mobile Number</label>
+                    <input type="tel" id="inqPhone" name="inqPhone" autocomplete="tel" required placeholder="10-digit smartphone number">
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Message Note Details</label>
-                    <textarea id="inqMessage" placeholder="Mention preferred time slots or optional stream selections..." style="padding: 12px; border-radius: 8px; background: #121526; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px; min-height: 80px; resize: vertical; font-family: inherit;"></textarea>
+                <div class="input-element-wrap">
+                    <label for="inqMessage">Message Note Details</label>
+                    <textarea id="inqMessage" name="inqMessage" placeholder="Mention preferred time slots or optional stream selections..."></textarea>
                 </div>
 
-                <button type="submit" id="inqSubmitBtn" style="padding: 14px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); border: none; color: #04060a; font-weight: 700; border-radius: 10px; cursor: pointer; margin-top: 5px; font-size: 14px; transition: opacity 0.2s ease;">Submit Admission Inquiry</button>
+                <button type="submit" id="inqSubmitBtn">Submit Admission Inquiry</button>
             </form>
         </div>
     </section>
 
-    <!-- MODAL OVERLAY PORTAL SCREEN -->
     <div class="modal-overlay" id="loginModal">
         <div class="login-card">
             <button type="button" class="close-btn" id="closeLoginBtn">&times;</button>
             
-            <!-- UPGRADED TAB NAVIGATION LAYOUT CONTAINER -->
-            <div class="tab-container" style="display: flex; gap: 4px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
-                <button type="button" class="tab-btn active" id="tabStudent" style="flex: 1; font-size: 13px; padding: 8px 4px;">Student Login</button>
-                <button type="button" class="tab-btn" id="tabSignup" style="flex: 1; font-size: 13px; padding: 8px 4px;">Request Access</button>
-                <button type="button" class="tab-btn" id="tabStaff" style="flex: 1; font-size: 13px; padding: 8px 4px;">Staff Portal</button>
+            <div class="tab-container">
+                <button type="button" class="tab-btn active" id="tabStudent">Student Login</button>
+                <button type="button" class="tab-btn" id="tabSignup">Request Access</button>
+                <button type="button" class="tab-btn" id="tabStaff">Staff Portal</button>
             </div>
             
-            <!-- FORM 1: STUDENT LOGIN PORTAL FORM GRID -->
             <form id="studentLoginForm" class="login-form active">
                 <h2>Student Login</h2>
                 <div class="input-group">
                     <label for="studentId">Student ID / Roll No.</label>
-                    <input type="text" id="studentId" name="studentId" required placeholder="e.g., VR2026105">
+                    <input type="text" id="studentId" name="studentId" autocomplete="username" required placeholder="e.g., VR2026105">
                 </div>
                 <div class="input-group">
                     <label for="studentPassword">Password</label>
-                    <input type="password" id="studentPassword" name="studentPassword" required placeholder="••••••••">
+                    <input type="password" id="studentPassword" name="studentPassword" autocomplete="current-password" required placeholder="••••••••">
                 </div>
                 <button type="submit" class="login-submit" id="studentSubmitBtn">Login to Dashboard</button>
                 <div class="error-msg" id="studentErrorMsg">Invalid Student ID or Password.</div>
             </form>
 
-            <!-- FORM 2: NEW STUDENT STAGING ACCESS REGISTRATION SIGNUP FORM -->
             <form id="studentSignupForm" class="login-form" style="display: none;">
                 <h2>Request Dashboard Access</h2>
-                <p style="color: #64748b; font-size: 13px; margin-bottom: 15px; line-height: 1.4;">Submit your credentials to staff registers. You will unlock system logins following teacher verification approval tokens.</p>
+                <p class="form-instructions">Submit your credentials to staff registers. You will unlock system logins following teacher verification approval tokens.</p>
                 
                 <div class="input-group">
                     <label for="signUpName">Full Name</label>
-                    <input type="text" id="signUpName" required placeholder="Name">
+                    <input type="text" id="signUpName" name="signUpName" autocomplete="name" required placeholder="Name">
                 </div>
                 <div class="input-group">
                     <label for="signUpClass">Target Class / Batch</label>
-                    <select id="signUpClass" required style="width: 100%; padding: 10px; border: 1px solid; border-radius: 6px;">
+                    <select id="signUpClass" name="signUpClass" required>
                         <option value="9th">Class 9th</option>
                         <option value="10th">Class 10th</option>
                         <option value="11th">Class 11th</option>
@@ -116,29 +108,28 @@
                 </div>
                 <div class="input-group">
                     <label for="signUpID">Proposed Login ID</label>
-                    <input type="text" id="signUpID" required placeholder="Choose a tracking username">
+                    <input type="text" id="signUpID" name="signUpID" autocomplete="username" required placeholder="Choose a tracking username">
                 </div>
                 <div class="input-group">
                     <label for="signUpPass">Account Password</label>
-                    <input type="password" id="signUpPass" required placeholder="••••••••">
+                    <input type="password" id="signUpPass" name="signUpPass" autocomplete="new-password" required placeholder="••••••••">
                 </div>
                 <div class="input-group">
                     <label for="signUpPhone">Parent / Student Mobile No.</label>
-                    <input type="tel" id="signUpPhone" required placeholder="10-digit smartphone number">
+                    <input type="tel" id="signUpPhone" name="signUpPhone" autocomplete="tel" required placeholder="10-digit smartphone number">
                 </div>
-                <button type="submit" class="login-submit" id="signUpSubmitBtn" style="background: #00f2fe; color: #0f172a;">Submit Registration Request</button>
+                <button type="submit" class="login-submit" id="signUpSubmitBtn">Submit Registration Request</button>
             </form>
 
-            <!-- FORM 3: ADMINISTRATIVE INSTRUCTOR LOGINS PORTAL ENGINE -->
             <form id="staffLoginForm" class="login-form" style="display: none;">
                 <h2>Staff Login</h2>
                 <div class="input-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required placeholder="Enter staff ID">
+                    <input type="text" id="username" name="username" autocomplete="username" required placeholder="Enter staff ID">
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                    <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="••••••••">
                 </div>
                 <button type="submit" class="login-submit" id="staffSubmitBtn">Access Staff Panel</button>
                 <div class="error-msg" id="staffErrorMsg">Invalid credentials. Access Denied.</div>
@@ -147,8 +138,7 @@
         </div>
     </div>
 
-    <!-- Modern Floating Notification Toast UI Element Container -->
-    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; pointer-events: none;"></div>
     
     <script src="index.js"></script>
 </body>
